@@ -1,0 +1,33 @@
+%%[
+    /* pull information from the DE */
+    Set @email = AttributeValue("EmailAddress")
+
+    /* find the postion of the @ sign in the string */
+    Set @at = IndexOf(@email, "@")
+
+    /* extract username of the string */
+    Set @username = Substring(@email, 1, Subtract(@at, 1))
+
+    Set @lenUsername = Length(@username)
+    Set @lenSubtract = Subtract(@lenUsername, 2)
+    Set @usernameSubstring = Substring(@username, 2, @lenSubtract)
+
+    For @i = 1 to @lenSubtract do
+        set @usernameAsterisks = Concat(@usernameAsterisks, "*")
+    next @i
+
+    /* extract domain */
+    Set @domain = Substring(@email, Add(@at, 1))
+
+    /* find postion of dot symbol */
+    Set @halfdomain = FormatNumber( Divide(Length(@domain), 2), "F0")
+    Set @domainSubstring = Substring(@domain, 2, @halfdomain)
+
+    For @i= 1 to @halfdomain do
+        Set @domainAsterisks = Concat(@domainAsterisks, "*")
+    next @i
+
+    Set @maskedUsername = Replace(@username, @usernameSubstring, @usernameAsterisks)
+    Set @maskedDomain = Replace(@domain, @domainSubstring, @domainAsterisks)
+    Set @maskedEmail = Concat(@maskedUsername, "@", @maskedDomain)
+]%%
