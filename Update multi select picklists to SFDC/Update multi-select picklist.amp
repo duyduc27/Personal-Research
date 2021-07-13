@@ -1,0 +1,83 @@
+%%[
+    if RequestParameter("submitted") == true then
+    set @PDPA = Concat(
+        IIf(RequestParameter("SMS")== "on", "SMS;", ""),
+        IIf(RequestParameter("call")== "on", "call;", ""),
+        IIf(RequestParameter("Email_pdpa")== "on", "Email_pdpa", ""),
+    )
+
+    if not Empty(@PDPA) then
+        set @updateRecord = UpdateSingleSalesforceObject(
+            "Contact", RequestParameter("subkey"),
+            "FirstName", RequestParameter("firstname"),
+            "LastName", RequestParameter("lastname"),
+            "Email", RequestParameter("email"),
+            "PDPA__c", @PDPA
+        )
+    Else
+        set @updateRecord = UpdateSingleSalesforceObject(
+            "Contact", RequestParameter("subkey"),
+            "FirstName", RequestParameter("firstname"),
+            "LastName", RequestParameter("lastname"),
+            "Email", RequestParameter("email"),
+            "fieldsToNull", "PDPA__c"
+        )
+    endif
+
+]%%
+
+Your preferences have been updated.
+
+%%[Else
+    set @subscriberkey = "003O000001TzbzvIAB"
+    set @subscriberrows = RetrieveSalesforceObjects("contact", "firstname, lastname, Email, PDPA__c", "ID", "=", @subscriberkey)
+
+    if RowCount(@subscriberrows) == 1 then
+        set @subscriberrow = Row(@subscriberrows, 1)
+        set @firstname = Field(@subscriberrow, "firstname")
+        set @lastname = Field(@subscriberrow, "lastname")
+        set @Email = Field(@subscriberrow, "Email")
+        set @PDPA__c = Field(@subscriberrow, "PDPA__c")
+
+        if not Empty(@PDPA__c) then
+            set @rs = BuildRowSetFromString(@PDPA__c, ";")
+            
+            if RowCount(@rs) > 0 then
+            for @i=1 to RowCount(@rs) do
+                set @val = Field(Row(@rs, @i), 1)
+                if @val == "SMS" then
+                    set @SMS = "Checked"
+                Elseif @val == "Call" then
+                    set @call = "Checked"
+                Elseif @val == "Email" then
+                    set @Email_pdpa = "Checked"
+                endif
+            
+            next @i
+
+            Else
+                set @SMS = ""
+                set @call = ""
+                set @Email_pdpa = ""
+            endif                
+
+        endif
+
+    endif
+]%%
+
+<h2>Please fill the form</h2>
+    <form action="%%=RequestParameter('http://cloud.e.cyclecarriage.com/updatePDPA')=%%" method="post">
+        <label>First Name: </label><input type="text" name="firstname" required="" value="%%=v(@firstname)=%%"><br>
+        <label>Last Name: </label><input type="text" name="lastname" required="" value="%%=v(@lastname)=%%"><br>
+        <label>Email: </label><input type="text" name="Email" required="" value="%%=v(@Email)=%%"><br>
+        Your current PDPA: %%=v(@PDPA__c)=%%<br><br>
+        <h2>Update your subscription:</h2>
+        <input name="SMS" type="checkbox" %%=v(@SMS)=%%><label>SMS</label><br>
+        <input name="Call" type="checkbox" %%=v(@Call)=%%><label>Call</label><br>
+        <input name="Email" type="checkbox" %%=v(@Email_pdpa)=%%><label>Email</label><br>
+        <input name="submitted" type="hidden" value="true"><br>
+        <input type="submit" value="Submit">
+    </form>
+
+%%[ ENDIF ]%%
