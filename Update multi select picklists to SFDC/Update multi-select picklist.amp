@@ -3,7 +3,7 @@
     set @PDPA = Concat(
         IIf(RequestParameter("SMS")== "on", "SMS;", ""),
         IIf(RequestParameter("call")== "on", "call;", ""),
-        IIf(RequestParameter("Email_pdpa")== "on", "Email_pdpa", ""),
+        IIf(RequestParameter("Email_pdpa")== "on", "Email", ""),
     )
 
     if not Empty(@PDPA) then
@@ -67,7 +67,7 @@ Your preferences have been updated.
 ]%%
 
 <h2>Please fill the form</h2>
-    <form action="%%=RequestParameter('http://cloud.e.cyclecarriage.com/updatePDPA')=%%" method="post">
+    <form action="%%=RequestParameter('PAGEURL')=%%" method="post">
         <label>First Name: </label><input type="text" name="firstname" required="" value="%%=v(@firstname)=%%"><br>
         <label>Last Name: </label><input type="text" name="lastname" required="" value="%%=v(@lastname)=%%"><br>
         <label>Email: </label><input type="text" name="Email" required="" value="%%=v(@Email)=%%"><br>
@@ -75,7 +75,8 @@ Your preferences have been updated.
         <h2>Update your subscription:</h2>
         <input name="SMS" type="checkbox" %%=v(@SMS)=%%><label>SMS</label><br>
         <input name="Call" type="checkbox" %%=v(@Call)=%%><label>Call</label><br>
-        <input name="Email" type="checkbox" %%=v(@Email_pdpa)=%%><label>Email</label><br>
+        <input name="Email_pdpa" type="checkbox" %%=v(@Email_pdpa)=%%><label>Email</label><br>
+        <input name="subkey" type="hidden" value="%%=v(@subscriberkey)=%%"><br>
         <input name="submitted" type="hidden" value="true"><br>
         <input type="submit" value="Submit">
     </form>

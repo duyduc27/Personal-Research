@@ -1,0 +1,28 @@
+%%[
+    If RequestParameter("submitted") == true then
+
+    /* create a new lead */
+    set @leadID = CreateSalesforceObject("Lead", 4,
+     "FirstName", RequestParameter("firstname"),
+     "LastName", RequestParameter("lastname"),
+     "Company", RequestParameter("company"),
+     "Email", RequestParameter("email")
+    )
+]%%
+<h2>Thank you for submitting the form.</h2>
+%%[ ELSE ]%%
+
+<table style="padding: 20px;">
+    <tr><td>
+        <h2>Please fill in the form:</h2>
+        <form action="%%=RequestParameter('PAGEURL')=%%" method="post">
+            <label>First name: </label><input type="text" name="firstname" required=""><br>
+            <label>Last name: </label><input type="text" name="lastname" required=""><br>
+            <label>Email: </label><input type="text" name="email" required=""><br>
+                <input name"submitted" type="hidden" value="true"><br>
+                <input type="submit" value="Submit">
+        </form>
+    </td></tr>
+</table>
+
+%%[ ENDIF ]%%
