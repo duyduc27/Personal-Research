@@ -5,7 +5,7 @@ Platform.Load("Core","1.1.1");
 var myDEName = 'Token response'
 var url = 'https://mcf81mjmhlj0b3t706c8ywng1zn1.auth.marketingcloudapis.com/v2/token';
 var contentType = 'application/json';
-var payload = '{"grant_type": "client_credentials","client_id": "15xhoq8f1gv4s2rue7jk3ed7", "client_secret": "g6wlFGA5eknjmLCEChVVOoFL"}';
+var payload = '{"grant_type": "client_credentials","client_id": "abcxyz", "client_secret": "abcxyz"}';
 
 try {
     var result = HTTP.Post(url, contentType, payload);
