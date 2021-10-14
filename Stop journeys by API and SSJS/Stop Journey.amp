@@ -1,0 +1,40 @@
+<script runat="server">
+
+Platform.Load("Core","1.1.1");
+
+// Get token from the DE
+var token_DE = 'Token response';
+var token_data = Platform.Function.LookupRows(token_DE, 'remark', 'my token');
+var accessToken = token_data[0].access_token; // we intend using only 1 record in this DE, have a script to clear the token DE entierly every time we call a new one
+
+// Prepare Post Marketing Cloud API to stop journeys
+var url = 'https://mcf81mjmhlj0b3t706c8ywng1zn1.rest.marketingcloudapis.com/';
+var contentType = 'application/json';
+var payload = '{}';
+var headerName = ['Authorization'];
+var headerValue = 'Bearer ' + accessToken;
+var headerValue = [headerValue]
+
+// Retrieve journey data which need to be stopped
+var myDEName = 'Journeys need to stop v2';
+var data = Platform.Function.LookupRows(myDEName, 'Remark', 'Stop Journey');
+if(data.length > 0) {
+
+    for (var i = 0; i <  data.length; i++){
+        var JourneyID = data[i].JourneyID;
+        var VersionNumber = data[i].VersionNumber;
+        var end_url = url + '/interaction/v1/interactions/stop/' + JourneyID + '?versionNumber=' + VersionNumber ;
+
+        try {
+            var result = HTTP.Post(end_url, contentType, payload, headerName, headerValue);
+        }
+
+        catch (ex) {
+            Write("Exception Error: " + Stringify(ex));
+        }
+
+    }
+
+}
+
+</script>

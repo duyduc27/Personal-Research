@@ -1,0 +1,58 @@
+<script runat="server">
+
+Platform.Load("Core","1.1.1");
+
+// Get data
+var init_array = [];
+var myDEName = "Email tsd from JB";
+var data = Platform.Function.LookupRows(myDEName, "Remark", "Refresh");
+if(data.length > 0) {
+    for(var i=0; i<data.length; i++) {
+        init_array.push(data[i].TriggeredSendCustomerKey)
+    }
+}
+Write("Check array " + Stringify(init_array) + "<br>");
+if (init_array.length >0) {
+
+// Create a retrieve request
+var rr = Platform.Function.CreateObject("RetrieveRequest");
+Platform.Function.SetObjectProperty(rr, "ObjectType", "TriggeredSendDefinition");
+Platform.Function.AddObjectArrayItem(rr, "Properties", "CustomerKey");
+
+
+// Create a filter
+var sfp = Platform.Function.CreateObject("SimpleFilterPart");
+// by Customer Key (External Key) Array 
+Platform.Function.SetObjectProperty(sfp, "Property", "CustomerKey");
+Platform.Function.SetObjectProperty(sfp, "SimpleOperator", "IN");
+for(var i = 0; i< init_array.length; i++) {
+    Platform.Function.AddObjectArrayItem(sfp, "Value", init_array[i]);
+}  
+
+// Add the filter to the retrieve
+  Platform.Function.SetObjectProperty(rr, "Filter", sfp);
+  
+// Do the retrieve
+var StatusAndRequestID = [0,0];
+
+var tsd = Platform.Function.InvokeRetrieve(rr, StatusAndRequestID);
+
+
+// Check Status
+Write("Status: " + StatusAndRequestID[0]);
+Write("<br>RequestID: " + StatusAndRequestID[1]);
+Write("<br>Tsd has " + Stringify(tsd.length) + " row/rows");
+
+// Process data
+if (tsd != null) {
+    for (var i = 0; i< init_array.length; i++) {
+        var tsd = TriggeredSend.Init(init_array[i]);
+
+        var pause = tsd.Pause();        
+        var publish = tsd.Publish();
+        var start = tsd.Start();
+    }
+}
+
+}
+</script>

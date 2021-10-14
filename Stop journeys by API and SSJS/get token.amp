@@ -1,0 +1,25 @@
+<script runat="server">
+
+Platform.Load("Core","1.1.1");
+
+var myDEName = 'Token response'
+var url = 'https://mcf81mjmhlj0b3t706c8ywng1zn1.auth.marketingcloudapis.com/v2/token';
+var contentType = 'application/json';
+var payload = '{"grant_type": "client_credentials","client_id": "15xhoq8f1gv4s2rue7jk3ed7", "client_secret": "g6wlFGA5eknjmLCEChVVOoFL"}';
+
+try {
+    var result = HTTP.Post(url, contentType, payload);
+    var obj = Platform.Function.ParseJSON(result.Response[0]);
+    var access_token = obj.access_token;
+    var token_type = obj.token_type;
+    var expires_in = obj.expires_in;
+
+    var row = Platform.Function.InsertDE(myDEName, ['access_token', 'token_type', 'expires_in', 'remark'], 
+    [access_token, token_type, expires_in, 'my token']);
+
+}
+catch (ex) {
+            Write("Exception Error: " + Stringify(ex));
+        }
+
+</script>

@@ -1,0 +1,23 @@
+<script runat="server">
+
+Platform.Load("core","1.1.1");
+
+var myDEName = "QueryStudioResults at 2021-10-07T0806540000"; // DE name
+var data = Platform.Function.LookupRows(myDEName, 'remark', 'Duc quick test');
+if (data.length > 0) {
+        for (var i = 0; i < data.length; i++)
+        {
+          var EmailAddress = data[i].sf_email;
+          var EmailAddress = {"EmailAddress": EmailAddress};
+
+          try {
+              var subObj = Subscriber.Init(data[i].subscriberkey);
+              var update = subObj.Update(EmailAddress);
+          }
+          catch (ex) {
+            Write("Exception Error: " + Stringify(ex));
+          }
+
+        };
+    };
+</script>
