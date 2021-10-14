@@ -49,8 +49,8 @@ if (tsd != null) {
         var tsd = TriggeredSend.Init(init_array[i]);
 
         var pause = tsd.Pause();        
-        //var publish = tsd.Publish();
-        //var start = tsd.Start();
+        var publish = tsd.Publish();
+        var start = tsd.Start();
     }
 }
 
